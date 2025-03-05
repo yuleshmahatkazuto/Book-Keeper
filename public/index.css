@@ -1,0 +1,78 @@
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  justify-content: space-between;
+  min-width: 70%;
+  max-height: 70%;
+  margin-top: 100px;
+  align-content: stretch;
+  font-size: large;
+  font-family: "Libre Baskerville", serif;
+}
+
+.searchbar{
+  grid-column: 1/3;
+  grid-row: 1;
+  margin: 10px;
+  padding: 5px 0px 5px 0px;
+  text-align: center;
+}
+
+.searchbar input[name="search"]:focus{
+  outline: none;
+}
+
+.container > div {
+  border: solid rgb(67, 113, 181) 3px;
+  border-radius: 5px;
+}
+
+body{
+  background-image: url('bookbg.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  margin: 0;
+}
+
+.cards{
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+  justify-items: center;
+  padding: 5px;
+  text-align: center;
+  font-weight: 500;
+  grid-row: 2;
+}
+
+hr{
+  color: rgb(67, 113, 181);
+}
+
+.title{
+  font-weight: bold;
+  color: rgb(92, 171, 183);
+  
+}
+
+.books{
+  display: block;
+  flex-grow: 1;
+  overflow-y: auto;
+  font-weight: 700;
+}
+
+input[type="checkbox"]{
+  border: solid orange 2px;
+  border-radius: 50%;
+}
+
+button:hover{
+  cursor: pointer;
+  border: 3px solid rgb(92, 148, 203);
+  border-radius: 5px;
+}

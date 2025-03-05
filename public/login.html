@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <form action="/login" method="POST" class="infoForm">
+      <input type="text" name="username" placeholder="Username" required/> 
+      <input type="password" name="password" placeholder="Password" required/> 
+      <button type="submit"> LogIn </button>
+      <button type="button" onclick="navigateToSignup()">SignUp</button> 
+    </form>
+  </div>
+  
+  <script>
+    function navigateToSignup(){
+      window.location.href = "signup.html";
+    }
+  </script>
+</body>
+</html>

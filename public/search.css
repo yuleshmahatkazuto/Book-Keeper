@@ -1,0 +1,41 @@
+body{
+  margin: 0;
+}
+
+.main-container{
+  background-image: url('bookbg.jpg');
+  background-size: cover;
+  min-height: 100vh;
+  max-height: 100vh;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  padding-top: 50px;
+  box-sizing: border-box;
+}
+
+.container-books{
+  display: grid;
+  grid-template-columns: 0.25fr 0.5fr 0.25fr;
+  text-align: center;
+  font-family: "Libre Baskerville", serif;
+  max-width: 60%;
+  max-height: 80vh;
+  overflow: auto;
+  align-items: center;
+}
+
+#title{
+  font-size: larger;
+  margin-bottom: 40px;
+  grid-column: 1 / 4;
+}
+
+button{
+  width: fit-content;
+  padding: 0 2px 0 2px;
+}
+
+button:hover {
+  cursor: pointer;
+}

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search</title>
+  <link href="search.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Delius&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Whisper&display=swap');
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <div class="container-books">
+      <div id="title">Results for <%= search %>.</div>
+      <% if(books){ %>
+        <% books.forEach((book, index) => { %> 
+          <div>
+            <img src="https://covers.openlibrary.org/b/olid/<%= book.cover_edition_key %>-M.jpg" alt="cover of <%= book.title %>" />
+          </div>
+          <div><%= book.title %></div>         
+          <div>
+            <form action="/addBIR" method="POST">
+              <input type="hidden" name="bookIveRead" value="<%= book.title %>" />
+              <input type="hidden" name="URL" value="https://covers.openlibrary.org/b/olid/<%= book.cover_edition_key %>-M.jpg" />
+              <button type="submit">Add as Read</button>
+            </form>
+            <form action="/addBTR" method="POST">
+              <input type="hidden" name="bookToRead" value="<%= book.title %>" />
+              <button type="submit">Add To Read</button>
+            </form>
+          </div>
+        <% }); %>  
+      <% } %>
+    </div>
+    
+  </div>  
+</body>
+</html>

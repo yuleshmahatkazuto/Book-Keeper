@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome</title>
+  <link rel="stylesheet" href="/index.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Delius&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Whisper&display=swap');
+    </style>
+</head>
+<body>
+  <div class="container">  
+    <div class="searchbar">
+      <form action="/search" method="POST">
+        <input type="text" name="search" placeholder="Search for a book" autofocus="off" autocomplete="off"/>
+        <button type="submit">Search</button>
+      </form>
+    </div> 
+    <div class="wantToRead cards">
+      <div class="title">
+        Books I want to Read
+        <hr>
+      </div>    
+      <div class="books">
+        <% toReadBooks.forEach((row, index) => { %>
+          <div id="<%= row.bookid %>">
+            <img src="<%= row.url %>" />
+            <label>
+              <input type="checkbox" name="toReadBook"> <%= row.name %>
+            </label>          
+          </div>          
+        <% }); %>       
+      </div>
+    </div>
+    <div class="haveRead cards">
+      <div class="title"> 
+        Books I've Read   
+        <hr>  
+      </div>
+      <div class="books">
+        <% readBooks.forEach((row, index) => { %>
+          <div id="<%= row.bookid %>">
+            <img src="<%= row.url %>" />
+            <label>
+              <input type="checkbox" name="readBook"><%= row.name %>
+            </label>
+          </div>
+          
+        <% }); %>        
+      </div>
+    </div>
+  </div>  
+  <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    $("input[name='readBook']").on('change', function(){
+      const bookId = $(this).closest('div').data('id');
+      console.log(bookId);      
+      axios.delete('/delete-book', {
+        data: {bookId: bookId}
+      })
+      .then(function(response){
+        $(this).closest('div').remove();
+        alert("Successfully deleted book");
+      })
+      .catch(function(error){
+        console.error("Error deleting the selected book", error);
+        alert("Error deleting the selected book.");
+      })
+    });
+  </script>
+</body>
+</html>
