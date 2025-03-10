@@ -24,7 +24,7 @@
       </div>    
       <div class="books">
         <% toReadBooks.forEach((row, index) => { %>
-          <div id="<%= row.bookid %>">
+          <div data-id="<%= row.bookid %>">
             <img src="<%= row.url %>" />
             <label>
               <input type="checkbox" name="toReadBook"> <%= row.name %>
@@ -40,7 +40,7 @@
       </div>
       <div class="books">
         <% readBooks.forEach((row, index) => { %>
-          <div id="<%= row.bookid %>">
+          <div data-id="<%= row.bookid %>">
             <img src="<%= row.url %>" />
             <label>
               <input type="checkbox" name="readBook"><%= row.name %>
@@ -69,6 +69,21 @@
         alert("Error deleting the selected book.");
       })
     });
+
+    async function markRead(mark){
+      const bookId = mark.closest('div').data('id');
+      if(mark.is(':checked')){
+        await axios.post('/mark-read', {bookId: bookId});
+        moveBook(bookId, '.wantToRead', '.haveRead');
+      }      
+    }
+
+    $(document).on("change", "input[name='toReadBook']", function(){markRead($(this));});
+
+    function moveBook(bookId, fromSection, toSection){
+      const bookElement = $(`${fromSection} div[id=${bookId}]`);
+      $(`${toSection}`).append(bookElement);
+    }
   </script>
 </body>
 </html>
