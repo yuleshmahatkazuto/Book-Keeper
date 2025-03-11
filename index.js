@@ -6,22 +6,13 @@ import { dirname } from "path";
 import { config } from 'dotenv';
 import axios from "axios";
 import { createClient } from '@supabase/supabase-js';
-import pkg from 'pg';
 
 const app = express();
 const port = 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 config({path: `${__dirname}/.env`});
-const {Pool} = pkg;
-const pool = new Pool({
-  host: 'db.huhgmqnydeprtsqqwvfn.supabase.co',
-  port: 5432,
-  database: 'BookKeeper',
-  user: 'postgres',
-  password: 'Yulrubis@58',
-  ssl: { rejectUnauthorized: false }
-});
+
 const supabaseUrl = 'https://huhgmqnydeprtsqqwvfn.supabase.co'
 const supabaseKey = process.env.DB_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey)
@@ -41,8 +32,8 @@ app.get("/", (req, res) => {
 app.get("/home", async (req, res) => {
   const [readbooks, toReadBooks] = await getBooks();
   res.render("index.ejs", {
-    readBooks: readbooks,
-    toReadBooks: toReadBooks
+    readBooks: readbooks || [],
+    toReadBooks: toReadBooks || []
   }); 
 });
 
@@ -60,29 +51,43 @@ app.post("/mark-read", async(req, res) => {
   console.log("mark-read route was triggered");
   const bookId = req.body.bookId;
   console.log(bookId);
-  const result = await pool.query("SELECT from books_to_read(name, url WHERE bookid=$1", [bookId]);
-  const name = result.rows[0].name;
-  const url = result.rows[0].url; 
+  const result = await supabase
+    .from('books_to_read')
+    .select('name, url')
+    .eq('bookid', bookId);
+  const name = result.data[0].name;
+  const url = result.data[0].url; 
   console.log(name, url);
-  await pool.query("INSERT INTO read_books(userid, name, url) VALUES($1, $2, $3)", [currentUser, name, url]);
-  await pool.query("DELETE FROM books_to_read WHERE bookid=$1", [bookId]);
+  await supabase
+    .from('read_books')
+    .insert([{userid: currentUser, name: name, url: url}]);
+  await supabase
+    .from('books_to_read')
+    .delete()
+    .eq('bookid', bookId);
   res.status(200).json({ message: "Book marked as read!"});  
 })
 
 app.post("/login", async (req, res) => {  
   const username = req.body.username;
   const password = req.body.password;
-  const result = await supabase
-    .from('users')
-    .select('id, username, user_credentials(password)')
-    .eq('username', username);
-  if (result.data[0].username === username && result.data[0].password === password){
-    currentUser = result.data[0].id;
-    console.log(currentUser);
-    res.redirect("/home");
-  } else{
-    res.status(400).json({error: "The username and password didn't match our records!"});
-  }
+  try{
+    const result = await supabase
+      .from('users')
+      .select('id, username, user_credentials(password)')
+      .eq('username', username);
+    if(!result.data || result.data.length === 0){
+      res.status(400).json({error: "The username and password didn't match our records!"});
+    }
+    console.log(result.data);
+    if (result.data[0].username === username && result.data[0].user_credentials.password === password){
+      currentUser = result.data[0].id;
+      console.log(currentUser);
+      res.redirect("/home");
+    }
+  } catch(error){
+    res.status(400).json({error: "Something else went wrong!"});
+  } 
   
 });
 
@@ -114,18 +119,22 @@ app.post("/signup", async(req, res) => {
 app.post("/addBTR", async(req,res) => {
   const name = req.body.bookToRead;
   const URL = req.body.URL;
-  await pool.query(`
-    INSERT INTO books_to_read (userid, name, URL) VALUES ($1, $2, $3) 
-    `, [currentUser, name, URL]);
+  console.log(currentUser, name, URL);
+  const {data, error} = await supabase
+    .from('books_to_read')
+    .insert([{userid: currentUser,name:name, url: URL}]);
+  if(error){
+    console.error(error);
+  }
   res.redirect("/home");  
 });
 
 app.post("/addBIR", async(req,res) => {
   const name = req.body.bookIveRead;
   const URL = req.body.URL;
-  await pool.query(`
-    INSERT INTO read_books (userid, name, URL) VALUES ($1, $2, $3) 
-    `, [currentUser, name, URL]);
+  await supabase
+    .from('read_books')
+    .insert([{userid: currentUser, name: name, url: URL}]);
   res.redirect("/home");  
 });
 
@@ -137,12 +146,13 @@ async function getBooks(){
   
   const readbooks = await supabase
     .from('read_books')
-    .select('bookid, name, URL')
+    .select('bookid, name, url')
     .eq('userid', currentUser);
   const toreadbooks = await supabase
     .from('books_to_read')
-    .select('bookid, name, URL')
+    .select('bookid, name, url') 
     .eq('userid', currentUser);
+  console.log(currentUser, readbooks, toreadbooks);
   return [readbooks.data, toreadbooks.data];
 }
 

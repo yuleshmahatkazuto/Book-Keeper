@@ -56,12 +56,13 @@
   <script>
     $("input[name='readBook']").on('change', function(){
       const bookId = $(this).closest('div').data('id');
+      const self = $(this);
       console.log(bookId);      
       axios.delete('/delete-book', {
         data: {bookId: bookId}
       })
       .then(function(response){
-        $(this).closest('div').remove();
+        $(self).closest('div').remove();
         alert("Successfully deleted book");
       })
       .catch(function(error){
