@@ -69,12 +69,12 @@ app.post("/mark-read", async(req, res) => {
 app.post("/login", async (req, res) => {  
   const username = req.body.username;
   const password = req.body.password;
-  const result = await pool.query(`SELECT id, username, password FROM users u JOIN user_credentials uc ON u.id = uc.id 
-    WHERE username = $1
-  `, [username]
-  );
-  if (result.rows[0].username === username && result.rows[0].password === password){
-    currentUser = result.rows[0].id;
+  const result = await supabase
+    .from('users')
+    .select('id, username, user_credentials(password)')
+    .eq('username', username);
+  if (result.data[0].username === username && result.data[0].password === password){
+    currentUser = result.data[0].id;
     console.log(currentUser);
     res.redirect("/home");
   } else{
@@ -89,9 +89,15 @@ app.post("/signup", async(req, res) => {
   const password2 = req.body.password2;
   try{
     if(password1 === password2) {
-      const result = await pool.query("INSERT INTO users (username) VALUES ($1) RETURNING id", [username]);
-      const user_id = result.rows[0].id;
-      await pool.query("INSERT INTO user_credentials (id, password) VALUES ($1, $2)", [user_id, password1]);
+      const result = await supabase
+        .from('users')
+        .insert([{ username: username }])
+        .select('id');
+        console.log(result);
+      const user_id = result.data[0].id;
+      await supabase
+        .from('user_credentials')
+        .insert([{id: user_id, password: password1}]);
       res.redirect("/");
     } else {
       res.status(400).json({message: "The password didn't match"});
@@ -125,9 +131,16 @@ app.listen(port, () =>  {
 });
 
 async function getBooks(){
-  const readbooks = await pool.query("SELECT bookid, name, URL FROM read_books WHERE userid = $1", [currentUser]);
-  const toreadbooks = await pool.query("SELECT bookid, name, URL FROM books_to_read WHERE userid = $1", [currentUser]);
-  return [readbooks.rows, toreadbooks.rows];
+  
+  const readbooks = await supabase
+    .from('read_books')
+    .select('bookid, name, URL')
+    .eq('userid', currentUser);
+  const toreadbooks = await supabase
+    .from('books_to_read')
+    .select('bookid, name, URL')
+    .eq('userid', currentUser);
+  return [readbooks.data, toreadbooks.data];
 }
 
 app.post("/search", async(req, res) => {
