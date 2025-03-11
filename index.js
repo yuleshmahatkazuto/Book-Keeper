@@ -49,7 +49,10 @@ app.get("/home", async (req, res) => {
 app.delete("/delete-book", async(req, res) => {
   const bookId = req.body.bookId;
   console.log(bookId);
-  await pool.query("DELETE FROM read_books WHERE bookid = $1", [bookId]);
+  await supabase
+    .from('read_books')
+    .delete()
+    .eq('bookid', bookId);
   res.status(200).json({ message: "Book deleted successfully" });
 });
 
