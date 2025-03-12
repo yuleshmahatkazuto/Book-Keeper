@@ -39,3 +39,7 @@ button{
 button:hover {
   cursor: pointer;
 }
+
+.poster{
+  min-height: 200px;
+}

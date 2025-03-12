@@ -24,11 +24,15 @@
       </div>    
       <div class="books">
         <% toReadBooks.forEach((row, index) => { %>
-          <div data-id="<%= row.bookid %>">
-            <img src="<%= row.url %>" />
-            <label>
-              <input type="checkbox" name="toReadBook"> <%= row.name %>
-            </label>          
+          <div data-id="<%= row.bookid %>" class="row">
+            <div class="poster">
+              <img src="<%= row.url %>" />
+            </div>
+            <div class="bookName">
+              <label>
+                <input type="checkbox" name="toReadBook"> <%= row.name %>
+              </label> 
+            </div>                     
           </div>          
         <% }); %>       
       </div>
@@ -40,29 +44,33 @@
       </div>
       <div class="books">
         <% readBooks.forEach((row, index) => { %>
-          <div data-id="<%= row.bookid %>">
-            <img src="<%= row.url %>" />
-            <label>
-              <input type="checkbox" name="readBook"><%= row.name %>
-            </label>
-          </div>
-          
+          <div data-id="<%= row.bookid %>" class="row">
+            <div class="poster">
+              <img src="<%= row.url %>" />
+            </div>
+            <div class="bookName">
+              <label>
+                <input type="checkbox" name="readBook"><%= row.name %>
+              </label>
+            </div>            
+          </div>          
         <% }); %>        
       </div>
     </div>
   </div>  
   <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   <script>
     $("input[name='readBook']").on('change', function(){
-      const bookId = $(this).closest('div').data('id');
+      const bookId = $(this).closest('.row').data('id');
       const self = $(this);
-      console.log(bookId);      
+      console.log("The book id recoreded in front-end is: " + bookId);      
       axios.delete('/delete-book', {
         data: {bookId: bookId}
       })
       .then(function(response){
-        $(self).closest('div').remove();
+        $(self).closest('.row').remove();
         alert("Successfully deleted book");
       })
       .catch(function(error){
@@ -72,7 +80,7 @@
     });
 
     async function markRead(mark){
-      const bookId = mark.closest('div').data('id');
+      const bookId = mark.closest('.row').data('id');
       if(mark.is(':checked')){
         await axios.post('/mark-read', {bookId: bookId});
         moveBook(bookId, '.wantToRead', '.haveRead');
@@ -82,7 +90,7 @@
     $(document).on("change", "input[name='toReadBook']", function(){markRead($(this));});
 
     function moveBook(bookId, fromSection, toSection){
-      const bookElement = $(`${fromSection} div[id=${bookId}]`);
+      const bookElement = $(`${fromSection} div[data-id=${bookId}]`);
       $(`${toSection}`).append(bookElement);
     }
   </script>

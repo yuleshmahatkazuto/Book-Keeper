@@ -15,19 +15,31 @@
       <div id="title">Results for <%= search %>.</div>
       <% if(books){ %>
         <% books.forEach((book, index) => { %> 
-          <div>
-            <img src="https://covers.openlibrary.org/b/olid/<%= book.cover_edition_key %>-M.jpg" alt="cover of <%= book.title %>" />
+          <div class="poster">
+            <% if(book.hasOwnProperty('cover_edition_key')){ %>
+              <img src="https://covers.openlibrary.org/b/olid/<%= book.cover_edition_key %>-M.jpg" alt="cover of <%= book.title %>" />
+            <% }else{ %>
+              <img src="/no-cover.jpg" alt="No cover found" />
+            <% } %>
           </div>
           <div><%= book.title %></div>         
           <div>
             <form action="/addBIR" method="POST">
               <input type="hidden" name="bookIveRead" value="<%= book.title %>" />
-              <input type="hidden" name="URL" value="https://covers.openlibrary.org/b/olid/<%= book.cover_edition_key %>-M.jpg" />
+              <% if(book.hasOwnProperty('cover_edition_key')){ %>
+                <input type="hidden" name="URL" value="https://covers.openlibrary.org/b/olid/<%= book.cover_edition_key %>-M.jpg" />
+              <% } else { %>
+                <input type="hidden" name="URL"  value="/no-cover.jpg" />
+              <% } %>
               <button type="submit">Add as Read</button>
             </form>
             <form action="/addBTR" method="POST">
+              <% if(book.hasOwnProperty('cover_edition_key')){ %>
+                <input type="hidden" name="URL" value="https://covers.openlibrary.org/b/olid/<%= book.cover_edition_key %>-M.jpg %>" />
+              <% } else { %>
+                <input type="hidden" name="URL" value="/no-cover.jpg"/>
+              <% } %>
               <input type="hidden" name="bookToRead" value="<%= book.title %>" />
-              <input type="hidden" name="URL" value="https://covers.openlibrary.org/b/olid/<%= book.cover_edition_key %>-M.jpg %>" />
               <button type="submit">Add To Read</button>
             </form>
           </div>

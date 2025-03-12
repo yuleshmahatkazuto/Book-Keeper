@@ -4,7 +4,7 @@
   grid-template-rows: auto 1fr;
   justify-content: space-between;
   min-width: 70%;
-  max-height: 70%;
+  max-height: 87%;
   margin-top: 100px;
   align-content: stretch;
   font-size: large;
@@ -47,6 +47,8 @@ body{
   text-align: center;
   font-weight: 500;
   grid-row: 2;
+  flex-grow: 1;
+  overflow-y: auto;
 }
 
 hr{
@@ -61,9 +63,22 @@ hr{
 
 .books{
   display: block;
-  flex-grow: 1;
-  overflow-y: auto;
   font-weight: 700;
+}
+
+.row{
+  display: flex;
+  align-items: center;
+}
+
+.poster{
+  max-width: 200px;
+}
+
+.bookName{
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
 }
 
 input[type="checkbox"]{

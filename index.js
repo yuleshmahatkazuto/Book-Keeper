@@ -39,7 +39,7 @@ app.get("/home", async (req, res) => {
 
 app.delete("/delete-book", async(req, res) => {
   const bookId = req.body.bookId;
-  console.log(bookId);
+  console.log(bookId + "The delete route was triggered.");
   await supabase
     .from('read_books')
     .delete()
@@ -50,14 +50,12 @@ app.delete("/delete-book", async(req, res) => {
 app.post("/mark-read", async(req, res) => {
   console.log("mark-read route was triggered");
   const bookId = req.body.bookId;
-  console.log(bookId);
   const result = await supabase
     .from('books_to_read')
     .select('name, url')
     .eq('bookid', bookId);
   const name = result.data[0].name;
   const url = result.data[0].url; 
-  console.log(name, url);
   await supabase
     .from('read_books')
     .insert([{userid: currentUser, name: name, url: url}]);
@@ -79,10 +77,8 @@ app.post("/login", async (req, res) => {
     if(!result.data || result.data.length === 0){
       res.status(400).json({error: "The username and password didn't match our records!"});
     }
-    console.log(result.data);
     if (result.data[0].username === username && result.data[0].user_credentials.password === password){
-      currentUser = result.data[0].id;
-      console.log(currentUser);
+      currentUser = result.data[0].id; 
       res.redirect("/home");
     }
   } catch(error){
@@ -101,7 +97,6 @@ app.post("/signup", async(req, res) => {
         .from('users')
         .insert([{ username: username }])
         .select('id');
-        console.log(result);
       const user_id = result.data[0].id;
       await supabase
         .from('user_credentials')
@@ -119,7 +114,6 @@ app.post("/signup", async(req, res) => {
 app.post("/addBTR", async(req,res) => {
   const name = req.body.bookToRead;
   const URL = req.body.URL;
-  console.log(currentUser, name, URL);
   const {data, error} = await supabase
     .from('books_to_read')
     .insert([{userid: currentUser,name:name, url: URL}]);
@@ -152,7 +146,6 @@ async function getBooks(){
     .from('books_to_read')
     .select('bookid, name, url') 
     .eq('userid', currentUser);
-  console.log(currentUser, readbooks, toreadbooks);
   return [readbooks.data, toreadbooks.data];
 }
 
@@ -163,7 +156,9 @@ app.post("/search", async(req, res) => {
   });
   const booknames = [];
   for(let i=0; i<12;i++){
-    booknames.push(result.data.docs[i]);
-  } 
+    if(result.data.docs[i]){
+      booknames.push(result.data.docs[i]);
+    }
+  }
   res.render("search.ejs", {books: booknames, search: searchText});
 });
