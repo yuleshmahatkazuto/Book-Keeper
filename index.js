@@ -1,5 +1,6 @@
 import bodyParser from "body-parser";
 import express from "express";
+import session from "express-session";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -21,20 +22,29 @@ const supabase = createClient(supabaseUrl, supabaseKey)
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
-
-
-let currentUser = 1;
+app.use(
+  session({
+    secret: process.env.SESSION_KEY, // A secret key to sign the session ID cookie
+    resave: false,              // Don't resave session if it hasn't changed
+    saveUninitialized: true,    // Save session even if it's uninitialized
+    cookie: { secure: false }   // Set secure: true if using https SET TRUE when production
+  })
+);
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html"));
 });
 
 app.get("/home", async (req, res) => {
-  const [readbooks, toReadBooks] = await getBooks();
-  res.render("index.ejs", {
-    readBooks: readbooks || [],
-    toReadBooks: toReadBooks || []
-  }); 
+  if(req.session.currentUser){
+    const [readbooks, toReadBooks] = await getBooks(req.session.currentUser);
+    res.render("index.ejs", {
+      readBooks: readbooks || [],
+      toReadBooks: toReadBooks || []
+    }); 
+  } else {
+    res.redirect("/");
+  }
 });
 
 app.delete("/delete-book", async(req, res) => {
@@ -58,15 +68,15 @@ app.post("/mark-read", async(req, res) => {
   const url = result.data[0].url; 
   await supabase
     .from('read_books')
-    .insert([{userid: currentUser, name: name, url: url}]);
+    .insert([{userid: req.session.currentUser, name: name, url: url}]);
   await supabase
     .from('books_to_read')
     .delete()
     .eq('bookid', bookId);
-  res.status(200).json({ message: "Book marked as read!"});  
-})
+  res.status(200).json({message: "Successfully marked as read!"});
+});
 
-app.post("/login", async (req, res) => {  
+app.post("/login", async (req, res) => { 
   const username = req.body.username;
   const password = req.body.password;
   try{
@@ -75,14 +85,14 @@ app.post("/login", async (req, res) => {
       .select('id, username, user_credentials(password)')
       .eq('username', username);
     if(!result.data || result.data.length === 0){
-      res.status(400).json({error: "The username and password didn't match our records!"});
+      return res.status(400).json({error: "The username and password didn't match our records!"});
     }
     if (result.data[0].username === username && result.data[0].user_credentials.password === password){
-      currentUser = result.data[0].id; 
-      res.redirect("/home");
+      req.session.currentUser = result.data[0].id;
+      return res.redirect("/home");
     }
   } catch(error){
-    res.status(400).json({error: "Something else went wrong!"});
+    return res.status(400).json({error: "Something else went wrong!"});
   } 
   
 });
@@ -116,7 +126,7 @@ app.post("/addBTR", async(req,res) => {
   const URL = req.body.URL;
   const {data, error} = await supabase
     .from('books_to_read')
-    .insert([{userid: currentUser,name:name, url: URL}]);
+    .insert([{userid: req.session.currentUser,name:name, url: URL}]);
   if(error){
     console.error(error);
   }
@@ -128,7 +138,7 @@ app.post("/addBIR", async(req,res) => {
   const URL = req.body.URL;
   await supabase
     .from('read_books')
-    .insert([{userid: currentUser, name: name, url: URL}]);
+    .insert([{userid: req.session.currentUser, name: name, url: URL}]);
   res.redirect("/home");  
 });
 
@@ -136,16 +146,16 @@ app.listen(port, () =>  {
   console.log(`Your app is running on port ${port}`);
 });
 
-async function getBooks(){
+async function getBooks(userId){
   
   const readbooks = await supabase
     .from('read_books')
     .select('bookid, name, url')
-    .eq('userid', currentUser);
+    .eq('userid', userId);
   const toreadbooks = await supabase
     .from('books_to_read')
     .select('bookid, name, url') 
-    .eq('userid', currentUser);
+    .eq('userid', userId);
   return [readbooks.data, toreadbooks.data];
 }
 

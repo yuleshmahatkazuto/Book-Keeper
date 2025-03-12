@@ -11,8 +11,13 @@
 </head>
 <body>
   <div class="container">  
+    <div class="logout">
+      <form action="/logout" method="POST">
+        <button type="submit" id="logout"> Logout </button>
+      </form>
+    </div>
     <div class="searchbar">
-      <form action="/search" method="POST">
+      <form action="/search" method="POST" id="searchform">
         <input type="text" name="search" placeholder="Search for a book" autofocus="off" autocomplete="off"/>
         <button type="submit">Search</button>
       </form>
@@ -71,19 +76,19 @@
       })
       .then(function(response){
         $(self).closest('.row').remove();
-        alert("Successfully deleted book");
       })
       .catch(function(error){
         console.error("Error deleting the selected book", error);
-        alert("Error deleting the selected book.");
       })
     });
 
     async function markRead(mark){
       const bookId = mark.closest('.row').data('id');
       if(mark.is(':checked')){
-        await axios.post('/mark-read', {bookId: bookId});
-        moveBook(bookId, '.wantToRead', '.haveRead');
+        axios.post('/mark-read', {bookId: bookId})
+        .then(() => {
+          window.location.href="/home";
+        });        
       }      
     }
 
