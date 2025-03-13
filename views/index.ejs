@@ -39,9 +39,7 @@
               <img src="<%= row.url %>" />
             </div>
             <div class="bookName">
-              <label>
-                <input type="checkbox" name="toReadBook"> <%= row.name %>
-              </label> 
+              <button id="markRead">Mark Read</button> <%= row.name %>
             </div>                     
           </div>          
         <% }); %>       
