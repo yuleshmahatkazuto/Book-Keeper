@@ -41,12 +41,11 @@ body{
 
 .logout{
   grid-row: 1;
-  grid-column: 1/-1;  
+  grid-column-start: 2;
   padding: 5px;
   margin: 10px;
   display: flex;
-  justify-content: right;
-  max-width: fit-content;
+  justify-self: end;  
 }
 
 .cards{
