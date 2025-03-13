@@ -97,6 +97,17 @@ app.post("/login", async (req, res) => {
   
 });
 
+app.post("/logout", (req,res) => {
+  req.session.destroy((err) => {
+    if(err) {
+      console.log(err);
+      return res.status(500).send("logout failed!");
+    }
+    res.clearCookie('connect.sid');
+    res.redirect("/");
+  })
+})
+
 app.post("/signup", async(req, res) => {
   const username = req.body.username;
   const password1 = req.body.password1;
