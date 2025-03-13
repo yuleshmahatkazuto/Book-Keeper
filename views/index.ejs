@@ -12,9 +12,14 @@
 <body>
   <div class="container">  
     <div class="logout">
-      <form action="/logout" method="POST">
-        <button type="submit" id="logout"> Logout </button>
-      </form>
+      <div>
+        <span id="username"><%= name %></span>        
+      </div>   
+      <div>
+        <form action="/logout" method="POST">
+          <button type="submit" id="logout"> Logout </button>
+        </form>
+      </div>   
     </div>
     <div class="searchbar">
       <form action="/search" method="POST" id="searchform">

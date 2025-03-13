@@ -40,7 +40,8 @@ app.get("/home", async (req, res) => {
     const [readbooks, toReadBooks] = await getBooks(req.session.currentUser);
     res.render("index.ejs", {
       readBooks: readbooks || [],
-      toReadBooks: toReadBooks || []
+      toReadBooks: toReadBooks || [],
+      name: req.session.username
     }); 
   } else {
     res.redirect("/");
@@ -89,6 +90,7 @@ app.post("/login", async (req, res) => {
     }
     if (result.data[0].username === username && result.data[0].user_credentials.password === password){
       req.session.currentUser = result.data[0].id;
+      req.session.username = username;
       return res.redirect("/home");
     }
   } catch(error){

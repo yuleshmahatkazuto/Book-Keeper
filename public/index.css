@@ -43,9 +43,9 @@ body{
   grid-row: 1;
   grid-column-start: 2;
   padding: 5px;
-  margin: 10px;
-  display: flex;
-  justify-self: end;  
+  margin: 10px;  
+  justify-self: end; 
+  display: flex; 
 }
 
 .cards{
@@ -101,5 +101,8 @@ button:hover{
   border-radius: 5px;
 }
 
-
+#username{
+  font-size: medium;
+  margin-right: 5px;
+}
 
