@@ -106,4 +106,15 @@ button:hover{
   margin-right: 5px;
 }
 
-#markRead
+#markRead, #delete{
+  min-width: fit-content;
+  margin: 0 5px 0 5px;
+}
+
+button.no-bootstrap {
+  all: unset; /* Resets all styles */
+  padding: 5px 10px;
+  background: #ccc;
+  border: 1px solid #999;
+  border-radius: 3px;
+}
