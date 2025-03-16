@@ -102,19 +102,32 @@ button:hover{
 }
 
 #username{
-  font-size: medium;
+  font-size: 14px;
   margin-right: 5px;
+  background-color: beige;
+  border-radius: 3px;
+  padding: 2px 3px;
 }
 
-#markRead, #delete{
+.markRead, .delete{
   min-width: fit-content;
   margin: 0 5px 0 5px;
 }
 
-button.no-bootstrap {
-  all: unset; /* Resets all styles */
-  padding: 5px 10px;
-  background: #ccc;
-  border: 1px solid #999;
-  border-radius: 3px;
+.delete{
+  background-color: rgb(242, 138, 18);
+  border-radius: 5px;
+  height: 30px;
 }
+
+.delete:hover{
+  border-color: rgb(241, 129, 97);
+}
+
+.markRead{
+  background-color: aquamarine;
+  border-radius: 5px;
+  height: 30px;
+}
+
+
