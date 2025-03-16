@@ -173,15 +173,20 @@ async function getBooks(userId){
 }
 
 app.post("/search", async(req, res) => {
-  const searchText = req.body.search;
-  const result = await axios.get(`https://openlibrary.org/search?q=${searchText}&sorts="rating"`, {
-    timeout: 10000,
-  });
-  const booknames = [];
-  for(let i=0; i<12;i++){
-    if(result.data.docs[i]){
-      booknames.push(result.data.docs[i]);
+  if(req.session.currentUser){
+    const searchText = req.body.search;
+    const result = await axios.get(`https://openlibrary.org/search?q=${searchText}&sorts="rating"`, {
+      timeout: 10000,
+    });
+    const booknames = [];
+    for(let i=0; i<12;i++){
+      if(result.data.docs[i]){
+        booknames.push(result.data.docs[i]);
+      }
     }
+    res.render("search.ejs", {books: booknames, search: searchText});
+  } else {
+    res.redirect("/");
   }
-  res.render("search.ejs", {books: booknames, search: searchText});
+  
 });
