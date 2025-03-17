@@ -14,7 +14,7 @@
     "dotenv-cli": "^8.0.0"
   },
   "scripts": {
-    "start": "dotenv -e .env -- node index.js",
+    "start": "node index.js",
     "dev": "nodemon index.js"
   }
 }
