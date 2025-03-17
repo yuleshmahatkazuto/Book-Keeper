@@ -95,10 +95,10 @@ app.post("/login", async (req, res) => {
     if (result.data[0].username === username && result.data[0].user_credentials.password === password){
       console.log("Username from database: " + result.data[0].username );
       console.log("UserId from database: " + result.data[0].id );
-      console.log("Session current User: " + req.session.currentUser);
-      console.log("Session username: " + req.session.username);
       req.session.currentUser = result.data[0].id;
       req.session.username = username;
+      console.log("Session current User: " + req.session.currentUser);
+      console.log("Session username: " + req.session.username);
       return res.redirect("/home");
     }
   } catch(error){
