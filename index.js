@@ -93,8 +93,10 @@ app.post("/login", async (req, res) => {
       return res.status(400).json({error: "The username and password didn't match our records!"});
     }
     if (result.data[0].username === username && result.data[0].user_credentials.password === password){
-      console.log(req.session.currentUser);
-      console.log(req.session.username);
+      console.log("Username from database: " + result.data[0].username );
+      console.log("UserId from database: " + result.data[0].id );
+      console.log("Session current User: " + req.session.currentUser);
+      console.log("Session username: " + req.session.username);
       req.session.currentUser = result.data[0].id;
       req.session.username = username;
       return res.redirect("/home");
