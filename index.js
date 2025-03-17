@@ -7,11 +7,15 @@ import { dirname } from "path";
 import { config } from 'dotenv';
 import axios from "axios";
 import { createClient } from '@supabase/supabase-js';
+import pgSession from 'connect-pg-simple';
+
 
 const app = express();
 const port = 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const PgSession = pgSession(session);
+
 config({path: `${__dirname}/.env`});
 
 const supabaseUrl = 'https://huhgmqnydeprtsqqwvfn.supabase.co'
@@ -24,6 +28,11 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 app.use(
   session({
+    store: new PgSession({
+      conString: process.env.SUPABASE_DB_CONNECTION_STRING, // Add this in .env
+      // Optionally set table name, defaults to "session"
+      tableName: 'user_sessions'
+    }),
     secret: process.env.SESSION_KEY, // A secret key to sign the session ID cookie
     resave: false,              // Don't resave session if it hasn't changed
     saveUninitialized: true,    // Save session even if it's uninitialized
@@ -102,6 +111,8 @@ app.post("/login", async (req, res) => {
       console.log("Session current User: " + req.session.currentUser);
       console.log("Session username: " + req.session.username);
       return res.redirect("/home");
+    }else{
+      return res.status(400).json({message: "The username and password did not match."});
     }
   } catch(error){
     return res.status(400).json({error: "Something else went wrong!"});
