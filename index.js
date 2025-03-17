@@ -39,6 +39,8 @@ app.get("/", (req, res) => {
 });
 
 app.get("/home", async (req, res) => {
+  console.log("HOme route was hit");
+  console.log(req.session.currentUser);
   if(req.session.currentUser){
     const [readbooks, toReadBooks] = await getBooks(req.session.currentUser);
     res.render("index.ejs", {
