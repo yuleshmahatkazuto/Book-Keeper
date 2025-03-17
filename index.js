@@ -29,7 +29,6 @@ app.use(
     saveUninitialized: true,    // Save session even if it's uninitialized
     cookie: {
       secure: process.env.NODE_ENV === "production",
-      httpOnly: true,
       maxAge: 1000 * 60 * 60
     }   // Set secure: true if using https SET TRUE when production
   })
@@ -82,6 +81,7 @@ app.post("/mark-read", async(req, res) => {
 });
 
 app.post("/login", async (req, res) => { 
+  console.log("this route was successfully hit");
   const username = req.body.username;
   const password = req.body.password;
   try{
