@@ -42,6 +42,7 @@ app.use(
     }   // Set secure: true if using https SET TRUE when production
   })
 );
+app.set('trust proxy', 1); 
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html"));
